@@ -1,0 +1,76 @@
+{% extends 'layout.html' %}
+
+{% block main %}
+    <div class="container mt-4">
+        <form method="POST">
+            <!--검색 버튼 추가, 스타일? 여백 설정-->
+            <div class="input-group mb-3">
+                <input type="text" class="form-control" placeholder="검색어를 입력하세요" name="searchInput">
+                <div class="input-group-append">
+                    <button class="btn btn-primary" type="submit">검색</button>
+                </div>
+            </div>
+        </form>
+
+        <div class="card-columns">
+            {% if matches %}
+                {% for match in matches %}
+                    <div class="card">
+                        <img class="card-img-top" src="{{ url_for('static', filename='vs1.png') }}" alt="Vs match" style="width: 100%; height: auto;">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ match.name }}</h5>
+                            <p class="card-text">{{ match.data }}, {{ match.location }}</p>
+                            <p class="card-text">{{ match.details }}</p>
+                            <a href="#" class="btn btn-primary">신청하기</a>
+                        </div>
+                    </div>
+                {% endfor %}]
+            <!--경기 매치가 없는경우-->
+            {% else %}
+                {% if no_results %}
+                    <p>검색 결과가 없습니다.</p>
+                {% else %}
+                    <p>경기 목록이 없습니다.</p>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+
+    <button type="button" class="btn btn-primary add-match-btn" data-toggle="modal" data-target="#addMatchModal" style="position: fixed; bottom: 20px; right: 20px; font-size: 24px; width: 60px; height: 60px; border-radius: 50%; background-color: black ;">
+        +
+    </button>
+
+    <div class="modal fade" id="addMatchModal" tabindex="-1" aria-labelledby="addMatchModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addMatchModalLabel">새 경기 추가</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label for="matchInput">경기</label>
+                            <input type="text" class="form-control" id="matchInput" placeholder="(예시: 인하대 농구 대항전)">
+                        </div>
+                        <div class="form-group">
+                            <label for="timeInput">시간, 장소</label>
+                            <input type="text" class="form-control" id="timeInput" placeholder="(예시: 4/17 오후 8시, 인하대 농구장)">
+                        </div>
+                        <div class="form-group">
+                            <label for="detailsInput">세부 내용</label>
+                            <textarea class="form-control" id="detailsInput" placeholder="(예시: 가드 용병 2명을 모집합니다.)"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
+                    <button type="button" class="btn btn-primary">제출하기</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+

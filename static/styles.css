@@ -1,0 +1,55 @@
+
+.header {
+    background-color: #000000;
+    padding: 3px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    }
+
+
+.logo {
+    text-align: center;
+    margin-top: 20px;
+    font-family: "Bangers", system-ui;
+    font-size: 40px;
+    margin-bottom: 0px;
+}
+
+.page{
+    text-align: center;
+    margin-top: 20px;
+}
+
+.main{
+    text-align: center;
+    margin-top: 20px;
+}
+
+.menu li a {
+    display: block;
+    position: relative;
+    margin-bottom: 60px
+}
+
+.menu li a:hover {
+    box-shadow: 0 0 10px rgb(0, 0, 0); /* 마우스 호버 시 그림자 효과 */
+    z-index: 1; /* 메뉴가 다른 요소 위에 올라오도록 설정 */
+}
+
+.menu li a:hover img {
+    transform: scale(1.1); /* 마우스 호버 시 이미지 크기 확대 */
+}
+
+footer {
+    position: static;
+    bottom: 0;
+    width: 100%;
+    background-color: #000000;
+    color: #fff;
+    text-align: center;
+    padding: 10px 0;
+    font-size: 14px;
+    font-weight: normal;
+}
+
