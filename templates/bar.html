@@ -55,6 +55,18 @@
     </ul>
 </div>
 
+{% if login %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="alert alert-success" role="alert">
+                Logged in as {{ username }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
 <!-- Bootstrap CSS -->
 <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 <!-- Bootstrap JavaScript -->
