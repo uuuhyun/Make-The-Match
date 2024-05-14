@@ -3,22 +3,22 @@
 {% block main %}
     <div class="container register-container" style="background-color: #ffffff; width:500px; height: auto; margin-top: 90px; margin-bottom: 200px">
         <h2 class="text-center" style = "color:#000000">Register</h2>
-        <form>
+        <form method="post" action="{{ url_for('register') }}">
             <div class="form-group">
                 <label for="userName" style = "color:#1a1a1a">이름</label>
-                <input type="text" class="form-control" id="userName" placeholder="이름 입력">
+                <input type="text" class="form-control" id="userName" name="username" placeholder="이름 입력">
             </div>
             <div class="form-group">
                 <label for="userEmail" style = "color:#1a1a1a">인하대 메일 주소</label>
-                <input type="email" class="form-control" id="userEmail" placeholder="이메일 주소 입력">
+                <input type="email" class="form-control" id="userEmail" name="email" placeholder="이메일 주소 입력">
             </div>
             <div class="form-group">
                 <label for="userPassword" style = "color:#1a1a1a">비밀번호</label>
-                <input type="password" class="form-control" id="userPassword" placeholder="비밀번호 입력">
+                <input type="password" class="form-control" id="userPassword" name="password" placeholder="비밀번호 입력">
             </div>
             <div class="form-group">
                 <label for="confirmPassword" style = "color:#1a1a1a">비밀번호 확인</label>
-                <input type="password" class="form-control" id="confirmPassword" placeholder="비밀번호 확인">
+                <input type="password" class="form-control" id="confirmPassword" name="confirm_password" placeholder="비밀번호 확인">
             </div>
             <button type="submit" class="btn btn-primary btn-block" style ="background-color: #3d3d3d; border: 1px solid #000000">회원가입</button>
         </form>
