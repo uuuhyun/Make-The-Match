@@ -3,14 +3,14 @@
 {% block main %}
 <div class="container login-container" style="background-color: #ffffff; width:500px; height: auto; margin-top: 120px; margin-bottom: 350px">
     <h2 class="text-center" style="color:#000000">Log In</h2>
-    <form>
+    <form method="POST" action="{{ url_for('login') }}">
         <div class="form-group">
             <label for="inputEmail" style="color:#1a1a1a">인하대 메일 주소</label>
-            <input type="email" class="form-control" id="inputEmail" placeholder="이메일 주소 입력">
+            <input type="email" class="form-control" id="inputEmail" name="inputEmail" placeholder="이메일 주소 입력" required>
         </div>
         <div class="form-group">
             <label for="inputPassword" style="color:#1a1a1a">비밀번호</label>
-            <input type="password" class="form-control" id="inputPassword" placeholder="비밀번호 입력">
+            <input type="password" class="form-control" id="inputPassword" name="inputPassword" placeholder="비밀번호 입력" required>
         </div>
         <button type="submit" class="btn btn-primary btn-block" style ="background-color: #3d3d3d; border: 1px solid #000000"; >로그인</button>
     </form>
