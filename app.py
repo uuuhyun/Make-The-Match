@@ -1,7 +1,9 @@
-from flask import Flask, render_template, redirect, url_for, request
+from flask import Flask, render_template, redirect, url_for, request, session, flash
 import sqlite3 as sql
 
 app = Flask(__name__)
+app.secret_key = 'your_secret_key'
+DATABASE = 'database.db'
 
 def generate_matches():
     return [
@@ -12,7 +14,9 @@ def generate_matches():
 
 @app.route('/')
 def home():
-    return render_template('bar.html')
+    login = session.get('login', False)
+    username = session.get('username', '')
+    return render_template('bar.html', login=login, username=username)
 
 @app.route('/daily')
 def daily():
@@ -29,15 +33,60 @@ def mypage():
     return render_template('mypage.html')
 
 
-@app.route('/login')
+@app.route('/login', methods=['GET', 'POST'])
 def login():
+    if request.method == 'POST':
+        email = request.form.get('inputEmail')
+        password = request.form.get('inputPassword')
+
+        conn = sql.connect(DATABASE)
+        cur = conn.cursor()
+
+        cur.execute("SELECT * FROM users WHERE email = ? AND password = ?", (email, password))
+        user = cur.fetchone()
+        if user:
+            session['login'] = True
+            session['username'] = email # session['username']은 이름이 아니라 id를 뜻합니다.
+            return redirect(url_for('home'))
+        else:
+            return '로그인 실패. 다시 시도해주세요.'
     return render_template('login.html')
 
+@app.route('/logout')
+def logout():
+    session.pop('login', None)
+    session.pop('username', None)
+    return redirect(url_for('home'))
 
-@app.route('/register')
+@app.route('/register', methods=['GET', 'POST'])
 def register():
-    return render_template('register.html')
+    if request.method == 'POST':
+        username = request.form.get('username')
+        email = request.form.get('email')
+        password = request.form.get('password')
+        confirm_password = request.form.get('confirm_password')
 
+        if password != confirm_password:
+            flash('Passwords do not match', 'danger')
+            return redirect(url_for('register'))
+
+        conn = sql.connect(DATABASE)
+        cur = conn.cursor()
+
+        existing_user = conn.execute('SELECT * FROM users WHERE username = ? OR email = ?',
+                                     (username, email)).fetchone()
+
+        if existing_user:
+            flash('Username or email already exists', 'danger')
+            return redirect(url_for('register'))
+
+        conn.execute('INSERT INTO users (username, email, password) VALUES (?, ?, ?)', (username, email, password))
+        conn.commit()
+        conn.close()
+
+        flash('Registration successful! Please log in.', 'success')
+        return redirect(url_for('login'))
+    return render_template('register.html')
 
 @app.route('/soccer')
 def soccer():
@@ -53,7 +102,7 @@ def soccer_info():
             time = request.form['timeInput']
             details = request.form['detailsInput']
 
-            with sql.connect("database.db") as con:
+            with sql.connect(DATABASE) as con:
                 cur = con.cursor()
                 cur.execute("INSERT INTO soccer (match, time, details) VALUES (?,?,?)",(match, time, details) )
         except:
@@ -64,7 +113,7 @@ def soccer_info():
 
 @app.route('/load_soccer_list')
 def load_soccer_list():
-    conn = sql.connect('database.db')
+    conn = sql.connect(DATABASE)
     cur = conn.cursor()
     soccer_list = []
     try:
@@ -94,7 +143,7 @@ def basketball_info():
             time = request.form['timeInput']
             details = request.form['detailsInput']
 
-            with sql.connect("database.db") as con:
+            with sql.connect(DATABASE) as con:
                 cur = con.cursor()
                 cur.execute("INSERT INTO basketball (match, time, details) VALUES (?,?,?)",(match, time, details) )
         except:
@@ -105,7 +154,7 @@ def basketball_info():
 
 @app.route('/load_basketball_list')
 def load_basketball_list():
-    conn = sql.connect('database.db')
+    conn = sql.connect(DATABASE)
     cur = conn.cursor()
     basketball_list = []
     try:
@@ -136,7 +185,7 @@ def tennis_info():
             time = request.form['timeInput']
             details = request.form['detailsInput']
 
-            with sql.connect("database.db") as con:
+            with sql.connect(DATABASE) as con:
                 cur = con.cursor()
                 cur.execute("INSERT INTO tennis (match, time, details) VALUES (?,?,?)",(match, time, details) )
         except:
@@ -147,7 +196,7 @@ def tennis_info():
 
 @app.route('/load_tennis_list')
 def load_tennis_list():
-    conn = sql.connect('database.db')
+    conn = sql.connect(DATABASE)
     cur = conn.cursor()
     tennis_list = []
     try:
