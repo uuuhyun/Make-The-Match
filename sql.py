@@ -3,19 +3,21 @@ import sqlite3
 conn = sqlite3.connect('database.db')
 cur = conn.cursor()
 
-conn.execute(
+cur.execute(
 '''
-create table soccer (match text, time text, details text)
-'''
-)
-conn.execute(
-'''
-create table basketball (match text, time text, details text)
+    CREATE TABLE IF NOT EXISTS soccer (team1 text, team2 text, time text, location text, details text)
 '''
 )
-conn.execute(
+
+cur.execute(
 '''
-create table tennis (match text, time text, details text)
+    CREATE TABLE IF NOT EXISTS basketball (team1 text, team2 text, time text, location text, details text)
+'''
+)
+
+cur.execute(
+'''
+    CREATE TABLE IF NOT EXISTS tennis (team1 text, team2 text, time text, location text, details text)
 '''
 )
 
