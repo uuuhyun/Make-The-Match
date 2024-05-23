@@ -5,14 +5,6 @@ app = Flask(__name__)
 app.secret_key = 'your_secret_key'
 DATABASE = 'database.db'
 
-
-def generate_matches():
-    return [
-        {'name': 'Match 1', 'data': 'Data 1', 'location': 'Location 1', 'details': 'Details 1'},
-        {'name': 'Match 2', 'data': 'Data 2', 'location': 'Location 2', 'details': 'Details 2'}
-    ]
-
-
 @app.route('/')
 def home():
     login = session.get('login', False)
@@ -271,25 +263,53 @@ def load_tennis_list():
     return tennis_list
 
 
-@app.route('/vs', methods=['GET', 'POST'])
+@app.route('/vs')
 def vs():
-    if request.method == 'POST':  # POST요청 시 검색
-        search_term = request.form.get('searchInput')
-        # 검색한 내용 있는지 찾기
-        matches = generate_matches()
-        filtered_matches = [match for match in matches if search_term.lower() in match['name'].lower()]
-        # 결과 있으면 -> 템플릿 렌더링
-        if len(filtered_matches) > 0:
-            return render_template('vs.html', matches=filtered_matches, search_term=search_term)
-        else:
-            # 검색 결과 없는 경우
-            return render_template('vs.html', no_result=True, search_term=search_term)
+    vs_list = load_vs_list()
+    length = len(vs_list)
+    return render_template('vs.html', vs_list=vs_list, length=length)
 
-    else:
-        matches = generate_matches()
-        return render_template('vs.html', matches=matches, search_term=None)
+@app.route('/vs_info', methods=['POST'])
+def vs_info():
+    if request.method == 'POST':
+        try:
+            team = request.form['team']
+            time = request.form['timeInput']
+            location = request.form['locationInput']
+            details = request.form['detailsInput']
+
+            with sql.connect(DATABASE) as con:
+                cur = con.cursor()
+                cur.execute("INSERT INTO vs (team, time, location, details) VALUES (?, ?, ?, ?)",
+                            (team, time, location, details))
+                con.commit()
+                flash('Submission completed successfully.', 'success')
+        except:
+            con.rollback()
+            flash(f'Submission failed. Error: {e}', 'danger')
+        finally:
+            con.close()
+
+    return redirect(url_for('vs'))
+
+
+def load_vs_list():
+    conn = sql.connect(DATABASE)
+    cur = conn.cursor()
+    vs_list = []
+    try:
+        cur.execute("SELECT team, time, location, details FROM vs")
+        rows = cur.fetchall()
+
+        for row in rows:
+            vs_list.append(row)
+    except Exception as e:
+        print(e)
+    finally:
+        cur.close()
+        conn.close()
+    return vs_list
 
 
 if __name__ == '__main__':
     app.run(debug=True)
-    11
