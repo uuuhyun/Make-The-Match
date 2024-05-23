@@ -21,6 +21,12 @@ cur.execute(
 '''
 )
 
+cur.execute(
+'''
+    CREATE TABLE IF NOT EXISTS vs (team text, time text, location text, details text)
+'''
+)
+
 cur.execute('''
     CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
