@@ -1,0 +1,33 @@
+{% extends 'layout.html' %}
+
+{% block main %}
+<div class="container login-container" style="background-color: #ffffff; width:500px; height: auto; margin-top: 120px; margin-bottom: 350px">
+    <h2 class="text-center" style="color:#000000">Log In</h2>
+    <form method="POST" action="{{ url_for('login') }}">
+        <div class="form-group">
+            <label for="inputEmail" style="color:#1a1a1a">인하대 메일 주소</label>
+            <input type="email" class="form-control" id="inputEmail" name="inputEmail" placeholder="이메일 주소 입력" required>
+        </div>
+        <div class="form-group">
+            <label for="inputPassword" style="color:#1a1a1a">비밀번호</label>
+            <input type="password" class="form-control" id="inputPassword" name="inputPassword" placeholder="비밀번호 입력" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block" style ="background-color: #3d3d3d; border: 1px solid #000000"; >로그인</button>
+    </form>
+    <!-- 실패 메시지를 표시할 알림창 -->
+        <div id="alert" class="alert alert-danger mt-3" role="alert" style="display: none;">
+            로그인 실패. 다시 시도해주세요.
+        </div>
+</div>
+
+<script>
+        // 실패 메시지가 있으면 알림창 표시
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+        const loginFailed = urlParams.get('login_failed');
+        if (loginFailed) {
+            document.getElementById('alert').style.display = 'block';
+        }
+    </script>
+
+{% endblock %}

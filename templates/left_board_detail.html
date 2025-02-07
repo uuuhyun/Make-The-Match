@@ -1,0 +1,60 @@
+{% extends 'layout.html' %}
+
+{% block main %}
+<div class="container mt-5" style="max-width: 1000px;">
+    <h1 class="text-center"><a href="#"><strong>자유게시판</strong></a></h1>
+    <br><br>
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th colspan="4" class="text-left">
+                    <strong>{{ post[1] }}</strong>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th class="text-right" style="width: 100px;">번호</th>
+                <td style="width: 200px;">{{ post[0] }}</td>
+                <th class="text-right" style="width: 100px;">닉네임</th>
+                <td>{{ post[3] }}</td>
+            </tr>
+            <tr>
+                <th class="text-right">등록일</th>
+                <td colspan="3">{{ post[4] }}</td>
+            </tr>
+            <tr>
+                <td colspan="4">
+                    <p class="text-left">{{ post[2] }}</p>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="container mt-5" style="max-width: 900px;">
+    <form class="mt-4" action="{{ url_for('left_board_detail', post_id=post['id']) }}" method="POST">
+        <div class="form-group">
+            <label for="comment_text"><strong>댓글 작성</strong></label>
+            <textarea class="form-control" id="comment_text" name="comment_text" rows="3" required></textarea>
+        </div>
+        {% if login %}
+            <button type="submit" class="btn btn-primary">댓글 추가</button>
+        {% else %}
+            <button type="button" class="btn btn-secondary" onclick="alert('로그인을 해주세요.');">댓글 추가</button>
+        {% endif %}
+        
+    </form>
+
+    <h5 class="mt-4"><strong>댓글</strong></h5>
+    <div class="list-group">
+        {% for comment in comments %}
+            <div class="list-group-item">
+                <p class="mb-1">{{ comment['comment_text'] }}</p>
+                <small class="text-muted">작성자: {{ comment['username'] }}, 작성일: {{ comment['created_at'] }}</small>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

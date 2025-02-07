@@ -1,0 +1,50 @@
+{% extends 'layout.html' %}
+
+{% block main %}
+    <div class="container register-container" style="background-color: #ffffff; width:500px; height: auto; margin-top: 90px; margin-bottom: 200px">
+        <h2 class="text-center" style="color:#000000">Register</h2>
+        <form method="post" action="{{ url_for('register') }}" onsubmit="return validateForm()">
+            <div class="form-group">
+                <label for="userName" style="color:#1a1a1a">사용자 이름</label>
+                <input type="text" class="form-control" id="userName" name="username" placeholder="사용자 이름 입력" required>
+            </div>
+            <div class="form-group">
+                <label for="userEmail" style="color:#1a1a1a">인하대 메일 주소</label>
+                <input type="email" class="form-control" id="userEmail" name="email" placeholder="이메일 주소 입력" required>
+            </div>
+            <div class="form-group">
+                <label for="userPassword" style="color:#1a1a1a">비밀번호</label>
+                <input type="password" class="form-control" id="userPassword" name="password" placeholder="비밀번호 입력" required>
+            </div>
+            <div class="form-group">
+                <label for="confirmPassword" style="color:#1a1a1a">비밀번호 확인</label>
+                <input type="password" class="form-control" id="confirmPassword" name="confirm_password" placeholder="비밀번호 확인" required>
+            </div>
+            <div class="form-group">
+                <label for="usermajor" style="color:#1a1a1a">소속 학과</label>
+                <input type="text" class="form-control" id="usermajor" name="major" placeholder="소속 학과 입력" required>
+            </div>
+            <div class="form-group">
+                <label for="userteam" style="color:#1a1a1a">소속 팀</label>
+                <input type="text" class="form-control" id="userteam" name="team" placeholder="소속 팀 입력" required>
+            </div>
+            <div class="form-group">
+                <input type="checkbox" id="isManager" name="is_manager">
+                <label for="isManager" style="color:#1a1a1a">매니저로 등록</label>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block" style="background-color: #3d3d3d; border: 1px solid #000000">회원가입</button>
+        </form>
+    </div>
+
+    <script>
+        function validateForm() {
+            var password = document.getElementById('userPassword').value;
+            var confirmPassword = document.getElementById('confirmPassword').value;
+            if (password !== confirmPassword) {
+                alert('비밀번호가 일치하지 않습니다.');
+                return false;
+            }
+            return true;
+        }
+    </script>
+{% endblock %}

@@ -1,0 +1,85 @@
+{% extends 'layout.html' %}
+
+{% block main %}
+<div class="container mt-5">
+    <h1 class="text-center"><a href="#"><strong>자유게시판</strong></a></h1>
+    <br><br>
+
+    <table class="table table-hover table-striped text-center" style="border: 1px solid;">
+        <thead>
+            <tr>
+                <th>번호</th>
+                <th>제목</th>
+                <th>글쓴이</th>
+                <th>작성일</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for left_board in left_board_list %}
+            <tr>
+                <td>{{ left_board[0] }}</td>
+                <td><a href="{{ url_for('left_board_detail', post_id=left_board[0]) }}">{{ left_board[1] }}</a></td>
+                <td>{{ left_board[3] }}</td>
+                <td>{{ left_board[4] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <hr>
+    <div>
+        <ul class="pagination justify-content-center">
+            <li class="page-item {% if page <= 1 %}disabled{% endif %}">
+                <a class="page-link" href="{{ url_for('left_board', page=page-1) }}">◀</a>
+            </li>
+            {% for p in range(1, total_pages+1) %}
+            <li class="page-item {% if page == p %}active{% endif %}">
+                <a class="page-link" href="{{ url_for('left_board', page=p) }}">{{ p }}</a>
+            </li>
+            {% endfor %}
+            <li class="page-item {% if page >= total_pages %}disabled{% endif %}">
+                <a class="page-link" href="{{ url_for('left_board', page=page+1) }}">▶</a>
+            </li>
+        </ul>
+    </div>
+</div>
+
+{% if login %}
+    <button type="button" class="btn btn-primary add-match-btn" data-toggle="modal" data-target="#addMatchModal" style="position: fixed; bottom: 20px; right: 20px; font-size: 24px; width: 60px; height: 60px; border-radius: 50%;">
+        +
+    </button>
+{% else %}
+    <button type="button" class="btn btn-secondary" onclick="alert('로그인을 해주세요.');" style="position: fixed; bottom: 20px; right: 20px; font-size: 24px; width: 60px; height: 60px; border-radius: 50%;">
+        +
+    </button>
+{% endif %}
+
+<div class="modal fade" id="addMatchModal" tabindex="-1" aria-labelledby="addMatchModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addMatchModalLabel">새 게시물 추가</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="addMatchForm" action="{{ url_for('left_board_add') }}" method="POST">
+                    <div class="form-group">
+                        <label for="title">제목</label>
+                        <input type="text" name="title" class="form-control" id="title" placeholder="제목을 입력해주세요." required>
+                    </div>
+                    <div class="form-group">
+                        <label for="context">내용</label>
+                        <textarea name="context" class="form-control" id="context" placeholder="내용을 입력해주세요." required></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">제출하기</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

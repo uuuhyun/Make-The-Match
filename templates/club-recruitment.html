@@ -1,0 +1,80 @@
+{% extends 'layout.html' %}
+
+{% block main %}
+<div class="container">
+  <br>
+  <h1 class="text-center"><a href="#">자유게시판</a></h1>
+  <br>
+  <br>
+
+  <table class="table table-hover table-striped text-center" style="border: 1px solid;">
+      <thead>
+          <tr>
+              <th>번호</th>
+              <th>제목</th>
+              <th>    </th>
+              <th>내용</th>
+              <th>    </th>
+          </tr>
+      </thead>
+      <tbody>
+          {% for left_board in left_board_list %}
+          <tr>
+              <td>{{ left_board[0] }}</td>
+              <td>{{ left_board[1] }}</td>
+              <td>{{ left_board[2] }}</td>
+          </tr>
+          {% endfor %}
+      </tbody>
+
+
+  </table>
+
+  <hr>
+  <div>
+      <ul class="pagination justify-content-center">
+          <li><a href="#" style="margin-right:5px; class=text-secondary"> ◀ </a></li>
+          <li><a href="#" style="margin-right:5px; class=text-secondary"> 1 </a></li>
+          <li><a href="#" style="margin-right:5px; class=text-secondary"> 2 </a></li>
+          <li><a href="#" style="margin-right:5px; class=text-secondary"> 3 </a></li>
+          <li><a href="#" style="margin-right:5px; class=text-secondary"> 4 </a></li>
+          <li><a href="#" style="margin-right:5px; class=text-secondary"> 5 </a></li>
+          <li><a href="#" style="margin-right:5px; class=text-secondary"> ▶ </a></li>
+
+      </ul>
+  </div>
+
+</div>
+<button type="button" class="btn btn-primary add-match-btn" data-toggle="modal" data-target="#addMatchModal" style="position: fixed; bottom: 20px; right: 20px; font-size: 24px; width: 60px; height: 60px; border-radius: 50%;">
+    +
+</button>
+<div class="modal fade" id="addMatchModal" tabindex="-1" aria-labelledby="addMatchModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addMatchModalLabel">새 경기 추가</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form id="addMatchForm" action="{{ url_for('general_board') }}" method="POST">
+            <div class="form-group">
+              <label for="title">제목</label>
+              <input type="text" name="title" class="form-control" id="title" placeholder="제목을 입력해주세요." required>
+            </div>
+            <div class="form-group">
+              <label for="context">내용</label>
+              <input type="text" name="context" class="form-control" id="context" placeholder="내용을 입력해주세요." required>
+            </div>
+            <div class="modal-footer">
+              <button type="submit" class="btn btn-primary">제출하기</button>
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}

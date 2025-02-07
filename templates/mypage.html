@@ -1,0 +1,570 @@
+{% extends 'layout.html' %}
+
+{% block main %}
+<link href="/static/styles.css" rel="stylesheet">
+
+<body>
+    <div class="container profile-header">
+        <form>
+            <label for="profile_picture" class="profile-picture-label">
+                <img id="profileImage" src="profile.png" alt="프로필 이미지" class="profile-picture">
+            </label>
+            <input type="file" id="profile_picture" accept="image/*" onchange="previewImage(event)" hidden>
+        </form>
+        <h1>{{ user_info[1] }}</h1>
+        <button class="custom-button" onclick="document.getElementById('profile_picture').click()">이미지 업로드</button>
+    </div>
+
+    <div class="container profile-info">
+        <p><strong>이름:</strong> {{ user_info[1] }}</p>
+        <p><strong>소속학과:</strong> {{ user_info[2] }}</p>
+        <p><strong>소속 팀:</strong> {{ user_info[3] }}</p>
+    </div>
+
+
+<div class="container participation-history">
+    <h2>참여 내역</h2>
+
+    <div id="participationList">
+        <!-- 축구 섹션 -->
+        <div id="soccerSection" class="section">
+            <h3>축구</h3>
+            <div class="card-columns" id="soccerCards">
+                <!-- 축구 카드가 여기에 동적으로 추가됩니다 -->
+            </div>
+        </div>
+
+        <!-- 농구 섹션 -->
+        <div id="basketballSection" class="section">
+            <h3>농구</h3>
+            <div class="card-columns" id="basketballCards">
+                <!-- 농구 카드가 여기에 동적으로 추가됩니다 -->
+            </div>
+        </div>
+
+        <!-- 테니스 섹션 -->
+        <div id="tennisSection" class="section">
+            <h3>테니스</h3>
+            <div class="card-columns" id="tennisCards">
+                <!-- 테니스 카드가 여기에 동적으로 추가됩니다 -->
+            </div>
+        </div>
+
+        <!-- vs 섹션 -->
+        <div id="vsSection" class="section">
+            <h3>VS</h3>
+            <div class="card-columns" id="vsCards">
+                <!-- vs 카드가 여기에 동적으로 추가됩니다 -->
+            </div>
+        </div>
+
+
+    </div>
+    <button class="btn btn-primary" onclick="showAllParticipation()">더보기</button>
+</div>
+
+<div class="container participation-history" id="addedMatchesContainer" style="display: none;">
+    <h2>내가 추가한 경기 내역</h2>
+
+    <div id="addedSoccerSection" class="section">
+        <h3>축구</h3>
+        <div class="card-columns" id="addedSoccerCards">
+            <!-- 축구 카드가 여기에 동적으로 추가됩니다 -->
+        </div>
+    </div>
+
+    <div id="addedBasketballSection" class="section">
+        <h3>농구</h3>
+        <div class="card-columns" id="addedBasketballCards">
+            <!-- 농구 카드가 여기에 동적으로 추가됩니다 -->
+        </div>
+    </div>
+
+    <div id="addedTennisSection" class="section">
+        <h3>테니스</h3>
+        <div class="card-columns" id="addedTennisCards">
+            <!-- 테니스 카드가 여기에 동적으로 추가됩니다 -->
+        </div>
+    </div>
+
+    <div id="addedVsSection" class="section">
+        <h3>VS</h3>
+        <div class="card-columns" id="addedVsCards">
+            <!-- VS 카드가 여기에 동적으로 추가됩니다 -->
+        </div>
+    </div>
+
+    <button class="btn btn-primary" onclick="showAllParticipation()">더보기</button>
+</div>
+
+
+
+<div class="container">
+    <button class="delete-account-btn" onclick="confirmDelete()">회원 탈퇴하기</button>
+</div>
+
+<button type="button" class="btn btn-primary add-match-btn" data-toggle="modal" data-target="#addModal" style="position: fixed; bottom: 20px; right: 20px; font-size: 24px; width: 60px; height: 60px; border-radius: 50%;">
+    +
+</button>
+
+<!-- Modal -->
+    <div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addModalLabel">나만의 로고 만들기</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group" id="logoGroup">
+                            <label for="logoText">로고에 넣을 팀 이름</label>
+                            <input type="text" class="form-control" id="logoText" placeholder="팀 이름을 입력하세요">
+                        </div>
+                        <div class="form-group" id="logoGroup">
+                            <label for="logoFont">폰트</label>
+                            <select class="form-control" id="logoFont">
+                              <option>Noto Sans KR</option>
+                              <option>Nanum Gothic</option>
+                              <option>Impact</option>
+                              <option>ThinFont</option>
+                            </select>
+                        </div>
+                        <div class="form-group" id="logoGroup">
+                            <label for="logoFontSize">폰트 크기</label>
+                            <input type="number" class="form-control" id="logoFontSize" value="10" min="1" max="50">
+                        </div>
+                        <div class="form-group" id="logoGroup">
+                            <label for="textColor">텍스트 색상</label>
+                            <input type="color" class="form-control" id="textColor" value="#000000">
+                        </div>
+                        <div class="form-group" id="logoGroup">
+                            <label for="gradientStartColor">그라디언트 시작 색상</label>
+                            <input type="color" class="form-control" id="gradientStartColor" value="#FF0000">
+                        </div>
+                        <div class="form-group" id="logoGroup">
+                            <label for="gradientEndColor">그라디언트 끝 색상</label>
+                            <input type="color" class="form-control" id="gradientEndColor" value="#0000FF">
+                        </div>
+                        <div class="form-group" id="logoGroup">
+                            <label for="shapeSelect">배경 모양 선택</label>
+                            <select class="form-control" id="shapeSelect">
+                              <option value="circle">원형</option>
+                              <option value="square">사각형</option>
+                              <option value="hexagon">육각형</option>
+                              <option value="star">별 모양</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="logoPreview">로고 미리보기</label>
+                            <div id="logoPreviewWrapper" style="position: relative;">
+                              <svg id="logoPreview" xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 50 50">
+                                <defs>
+                                  <linearGradient id="gradient">
+                                    <stop offset="0%" stop-color="#FF0000" />
+                                    <stop offset="100%" stop-color="#0000FF" />
+                                  </linearGradient>
+                                </defs>
+                                <circle id="logoShapeCircle" cx="25" cy="25" r="20" fill="url(#gradient)" style="display: none;" />
+                                <rect id="logoShapeSquare" x="5" y="5" width="40" height="40" fill="url(#gradient)" style="display: none;" />
+                                <polygon id="logoShapeHexagon" points="25,5 40,17.5 40,32.5 25,45 10,32.5 10,17.5" fill="url(#gradient)" style="display: none;" />
+                                <polygon id="logoShapeStar" points="25,2.5 31.25,18 47.5,20.5 35.25,32.5 37.5,48.5 25,39 12.5,48.5 14.75,32.5 2.5,20.5 18.75,18" fill="url(#gradient)" style="display: none;" />
+                                <text id="logoPreviewText" x="50%" y="50%" alignment-baseline="middle" text-anchor="middle" fill="#FFFFFF" font-family="Noto Sans KR" font-size="10" style="transform-origin: center center;">텍스트</text>
+                              </svg>
+                            </div>
+                            <button id="downloadLogoBtn" class="btn btn-primary mt-2" type="button">다운로드</button>
+                        </div>
+                        <input type="hidden" name="logoPng" id="logoPng">
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
+    <script>
+        document.getElementById('logoText').addEventListener('input', updateLogo);
+        document.getElementById('logoFont').addEventListener('change', updateLogo);
+        document.getElementById('logoFontSize').addEventListener('input', updateLogo);
+        document.getElementById('textColor').addEventListener('input', updateLogo);
+        document.getElementById('gradientStartColor').addEventListener('input', updateLogo);
+        document.getElementById('gradientEndColor').addEventListener('input', updateLogo);
+        document.getElementById('shapeSelect').addEventListener('change', updateLogo);
+
+        function updateLogo() {
+            const text = document.getElementById('logoText').value || '텍스트';
+            const font = document.getElementById('logoFont').value;
+            const fontSize = document.getElementById('logoFontSize').value;
+            const textColor = document.getElementById('textColor').value;
+            const gradientStartColor = document.getElementById('gradientStartColor').value;
+            const gradientEndColor = document.getElementById('gradientEndColor').value;
+            const shape = document.getElementById('shapeSelect').value;
+
+            const logoPreviewText = document.getElementById('logoPreviewText');
+            logoPreviewText.textContent = text;
+            logoPreviewText.setAttribute('font-family', font);
+            logoPreviewText.setAttribute('font-size', fontSize);
+            logoPreviewText.setAttribute('fill', textColor);
+
+            const gradient = document.getElementById('logoPreview').querySelector('linearGradient');
+            gradient.querySelector('stop[offset="0%"]').setAttribute('stop-color', gradientStartColor);
+            gradient.querySelector('stop[offset="100%"]').setAttribute('stop-color', gradientEndColor);
+
+            // Hide all shapes
+            document.getElementById('logoShapeCircle').style.display = 'none';
+            document.getElementById('logoShapeSquare').style.display = 'none';
+            document.getElementById('logoShapeHexagon').style.display = 'none';
+            document.getElementById('logoShapeStar').style.display = 'none';
+
+            // Show selected shape
+            if (shape === 'circle') {
+                document.getElementById('logoShapeCircle').style.display = 'block';
+            } else if (shape === 'square') {
+                document.getElementById('logoShapeSquare').style.display = 'block';
+            } else if (shape === 'hexagon') {
+                document.getElementById('logoShapeHexagon').style.display = 'block';
+            } else if (shape === 'star') {
+                document.getElementById('logoShapeStar').style.display = 'block';
+            }
+        }
+
+        // 미리보기 이미지 표시
+        function previewImage(event) {
+            var reader = new FileReader();
+            reader.onload = function() {
+                var output = document.getElementById('profileImage');
+                output.src = reader.result;
+            }
+            reader.readAsDataURL(event.target.files[0]);
+        }
+
+    // 시간을 특정 형식으로 변환하는 함수
+    function formatTime(timeString) {
+        const date = new Date(timeString);
+        const formattedTime = date.toLocaleString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
+        return formattedTime;
+    }
+
+    const appliedSoccer = {{ applied_soccer|tojson }};
+    const appliedBasketball = {{ applied_basketball|tojson }};
+    const appliedTennis = {{ applied_tennis|tojson }};
+    const appliedVs = {{ applied_vs|tojson }};
+
+    function createCard_VS(data, type) {
+        const card = document.createElement('div');
+        card.className = 'card';
+
+        const cardBody = document.createElement('div');
+        cardBody.className = 'card-body';
+
+        const title = document.createElement('h5');
+        title.className = 'card-title';
+        title.textContent = `상대팀 ${data[1]}`;
+        cardBody.appendChild(title);
+
+        // 시간을 원하는 형식으로 변환하여 추가
+        const time = document.createElement('p');
+        time.className = 'card-text';
+        time.textContent = `${formatTime(data[2])}`;
+        cardBody.appendChild(time);
+
+        for (let i = 3; i <= 4; i++) {
+            const p = document.createElement('p');
+            p.className = 'card-text';
+            p.textContent = data[i];
+            cardBody.appendChild(p);
+        }
+
+        const contact = document.createElement('p');
+        contact.className = 'card-text';
+        contact.textContent = `매니저 연락처 ${data[6]}`;
+        cardBody.appendChild(contact);
+
+        card.appendChild(cardBody);
+        return card;
+    }
+
+
+    function createCard(data, type) {
+        const card = document.createElement('div');
+        card.className = 'card';
+
+        const cardBody = document.createElement('div');
+        cardBody.className = 'card-body';
+
+        const title = document.createElement('h5');
+        title.className = 'card-title';
+        title.textContent = `${data[1]} VS ${data[2]}`;
+        cardBody.appendChild(title);
+
+        // 시간을 원하는 형식으로 변환하여 추가
+        const time = document.createElement('p');
+        time.className = 'card-text';
+        time.textContent = `${formatTime(data[3])}`;
+        cardBody.appendChild(time);
+
+        for (let i = 4; i <= 5; i++) {
+            const p = document.createElement('p');
+            p.className = 'card-text';
+            p.textContent = data[i];
+            cardBody.appendChild(p);
+        }
+
+        const contact = document.createElement('p');
+        contact.className = 'card-text';
+        contact.textContent = `매니저 연락처 ${data[7]}`;
+        cardBody.appendChild(contact);
+
+        card.appendChild(cardBody);
+        return card;
+    }
+
+    function loadParticipationHistory() {
+        const soccerList = document.getElementById('soccerCards');
+        const basketballList = document.getElementById('basketballCards');
+        const tennisList = document.getElementById('tennisCards');
+        const vsList = document.getElementById('vsCards');
+
+        soccerList.innerHTML = '';  // 기존 내용 지우기
+        basketballList.innerHTML = '';  // 기존 내용 지우기
+        tennisList.innerHTML = '';  // 기존 내용 지우기
+        vsList.innerHTML = '';  // 기존 내용 지우기
+
+        if (appliedSoccer.length > 0) {
+            appliedSoccer.forEach(soccer => {
+                soccerList.appendChild(createCard(soccer, 'Soccer'));
+            });
+        } else {
+            document.getElementById('soccerSection').style.display = 'none';
+        }
+
+        if (appliedBasketball.length > 0) {
+            appliedBasketball.forEach(basketball => {
+                basketballList.appendChild(createCard(basketball, 'Basketball'));
+            });
+        } else {
+            document.getElementById('basketballSection').style.display = 'none';
+        }
+
+        if (appliedTennis.length > 0) {
+            appliedTennis.forEach(tennis => {
+                tennisList.appendChild(createCard(tennis, 'Tennis'));
+            });
+        } else {
+            document.getElementById('tennisSection').style.display = 'none';
+        }
+
+
+        if (appliedVs.length > 0) {
+            appliedVs.forEach(vs => {
+                vsList.appendChild(createCard_VS(vs, 'Vs'));
+            });
+        } else {
+            document.getElementById('vsSection').style.display = 'none';
+        }
+    }
+
+    function showAllParticipation() {
+        loadParticipationHistory();
+    }
+
+    function confirmDelete() {
+        if (confirm("정말 회원 탈퇴하시겠습니까?")) {
+            // 서버로 회원 탈퇴 요청을 보냅니다.
+            fetch('/delete_account', {
+                method: 'POST',
+                body: JSON.stringify({}),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert("회원 탈퇴가 완료되었습니다.");
+                    window.location.href = '/';  // 홈 화면으로 이동
+                } else {
+                    alert("회원 탈퇴에 실패했습니다.");
+                    // 실패한 경우에 대한 처리를 수행할 수 있습니다.
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+    }
+
+    window.onload = loadParticipationHistory;
+    document.getElementById('downloadLogoBtn').addEventListener('click', downloadLogo);
+
+        function downloadLogo() {
+            var svg = document.getElementById('logoPreview');
+            var svgData = new XMLSerializer().serializeToString(svg);
+            var canvas = document.createElement('canvas');
+            var ctx = canvas.getContext('2d');
+            var img = new Image();
+            img.onload = function () {
+                canvas.width = img.width;
+                canvas.height = img.height;
+                ctx.drawImage(img, 0, 0);
+                var pngFile = canvas.toDataURL('image/png');
+                const link = document.createElement('a');
+                link.href = pngFile;
+                link.download = 'logo.png';
+                link.click();
+            };
+            img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
+        }
+
+
+    </script>
+
+<script>
+const addedSoccer = {{ added_soccer|tojson }};
+const addedBasketball = {{ added_basketball|tojson }};
+const addedTennis = {{ added_tennis|tojson }};
+const addedVs = {{ added_vs|tojson }};
+
+    function createAddedCard_VS(data, type) {
+        const card = document.createElement('div');
+        card.className = 'card';
+
+        const cardBody = document.createElement('div');
+        cardBody.className = 'card-body';
+
+        const title = document.createElement('h5');
+        title.className = 'card-title';
+        title.textContent = `${data[1]}`;
+        cardBody.appendChild(title);
+
+        // 시간을 원하는 형식으로 변환하여 추가
+        const time = document.createElement('p');
+        time.className = 'card-text';
+        time.textContent = `${formatTime(data[2])}`;
+        cardBody.appendChild(time);
+
+        for (let i = 3; i <= 4; i++) {
+            const p = document.createElement('p');
+            p.className = 'card-text';
+            p.textContent = data[i];
+            cardBody.appendChild(p);
+        }
+
+        const contact = document.createElement('p');
+        contact.className = 'card-text';
+        contact.textContent = `상대팀 연락처 ${data[5]}`;
+        cardBody.appendChild(contact);
+
+        card.appendChild(cardBody);
+        return card;
+    }
+
+
+function createAddedCard(data, type) {
+    const card = document.createElement('div');
+    card.className = 'card';
+
+    const cardBody = document.createElement('div');
+    cardBody.className = 'card-body';
+
+    const title = document.createElement('h5');
+    title.className = 'card-title';
+    title.textContent = `${data[1]} VS ${data[2]}`;
+    cardBody.appendChild(title);
+
+    for (let i = 3; i <= 5; i++) {
+        const p = document.createElement('p');
+        p.className = 'card-text';
+        if (i === 3) {
+            const date = new Date(data[i]);
+            const formattedDate = date.toLocaleString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
+            p.textContent = `${formattedDate}`;
+        } else {
+            p.textContent = data[i];
+        }
+        cardBody.appendChild(p);
+    }
+    const applicants = document.createElement('p');
+    applicants.className = 'card-text';
+    applicants.textContent = `신청자: ${data[data.length - 1].join(', ')}`;
+    cardBody.appendChild(applicants);
+
+    card.appendChild(cardBody);
+    return card;
+}
+
+function loadAddedMatches() {
+    const soccerList = document.getElementById('addedSoccerCards');
+    const basketballList = document.getElementById('addedBasketballCards');
+    const tennisList = document.getElementById('addedTennisCards');
+    const vsList = document.getElementById('addedVsCards');
+
+    soccerList.innerHTML = '';  // 기존 내용 지우기
+    basketballList.innerHTML = '';  // 기존 내용 지우기
+    tennisList.innerHTML = '';  // 기존 내용 지우기
+    vsList.innerHTML = '';  // 기존 내용 지우기
+
+    let hasAddedMatches = false;
+
+    if (addedSoccer.length > 0) {
+        addedSoccer.forEach(soccer => {
+            soccerList.appendChild(createAddedCard(soccer, 'Soccer'));
+        });
+        hasAddedMatches = true;
+    } else {
+        document.getElementById('addedSoccerSection').style.display = 'none';
+    }
+
+    if (addedBasketball.length > 0) {
+        addedBasketball.forEach(basketball => {
+            basketballList.appendChild(createAddedCard(basketball, 'Basketball'));
+        });
+        hasAddedMatches = true;
+    } else {
+        document.getElementById('addedBasketballSection').style.display = 'none';
+    }
+
+    if (addedTennis.length > 0) {
+        addedTennis.forEach(tennis => {
+            tennisList.appendChild(createAddedCard(tennis, 'Tennis'));
+        });
+        hasAddedMatches = true;
+    } else {
+        document.getElementById('addedTennisSection').style.display = 'none';
+    }
+
+    if (addedVs.length > 0) {
+        addedVs.forEach(vs => {
+            vsList.appendChild(createAddedCard_VS(vs, 'Tennis'));
+        });
+        hasAddedMatches = true;
+    } else {
+        document.getElementById('addedVsSection').style.display = 'none';
+    }
+
+
+    if (hasAddedMatches) {
+        document.getElementById('addedMatchesContainer').style.display = 'block';
+    }
+}
+
+window.onload = function() {
+    loadParticipationHistory();
+    loadAddedMatches();
+};
+</script>
+
+
+<!-- Bootstrap CSS -->
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+<!-- Bootstrap JavaScript -->
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<!-- jQuery (Bootstrap의 JavaScript 플러그인을 위해 필요합니다) -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</body>
+
+{% endblock %}

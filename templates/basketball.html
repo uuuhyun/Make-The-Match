@@ -1,0 +1,159 @@
+{% extends 'layout.html' %}
+
+{% block main %}
+<div class="container mt-4">
+  <div class="card-columns">
+      {% for basketball in basketball_list %}
+      {% if basketball[6] - count_dict[basketball[0]] > 0 %}
+      <div class="card">
+          <img class="card-img-top random-img" src="" alt="Basketball match" style="width:100%; height: auto;">
+          <div class="card-body">
+              <h5 class="card-title">{{ basketball[1] }} VS {{ basketball[2] }}</h5>
+              <p class="card-text">{{ basketball[3] | datetimeformat('%Y/%m/%d %H:%M') }}</p>
+              <p class="card-text">{{ basketball[4] }}</p>
+              <p class="card-text">{{ basketball[5] }}</p>
+              <p class="card-text">남은인원 {{ basketball[6] - count_dict[basketball[0]] }} / {{ basketball[6] }}</p>
+              {% if login %}
+              <a href="#" class="btn btn-primary apply-button" data-id="{{ basketball[0] }}">신청하기</a>
+              {% else %}
+              <button class="btn btn-secondary" onclick="alert('로그인을 해주세요.');">신청하기</button>
+              {% endif %}
+          </div>
+      </div>
+      {% endif %}
+      {% endfor %}
+  </div>
+</div>
+
+{% if login %}
+    {% if manager %}
+        <button type="button" class="btn btn-primary add-match-btn" data-toggle="modal" data-target="#addMatchModal" style="position: fixed; bottom: 20px; right: 20px; font-size: 24px; width: 60px; height: 60px; border-radius: 50%;">
+            +
+        </button>
+    {% else %}
+        <button type="button" class="btn btn-secondary" onclick="alert('매니저만 경기 추가가 가능합니다.');" style="position: fixed; bottom: 20px; right: 20px; font-size: 24px; width: 60px; height: 60px; border-radius: 50%;">
+            +
+        </button>
+    {% endif %}
+{% else %}
+    <button type="button" class="btn btn-secondary" onclick="alert('로그인을 해주세요.');" style="position: fixed; bottom: 20px; right: 20px; font-size: 24px; width: 60px; height: 60px; border-radius: 50%;">
+        +
+    </button>
+{% endif %}
+
+
+<div class="modal fade" id="addMatchModal" tabindex="-1" aria-labelledby="addMatchModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="addMatchModalLabel">새 경기 추가</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="addMatchForm" action="{{ url_for('basketball_info') }}" method="POST">
+          <div class="form-group">
+            <label for="team1">팀1</label>
+            <input type="text" name="team1" class="form-control" id="team1" placeholder="(예시: 아태농구팀)" required>
+          </div>
+          <div class="form-group">
+            <label for="team2">팀2</label>
+            <input type="text" name="team2" class="form-control" id="team2" placeholder="(예시: 경영농구팀)" required>
+          </div>
+          <div class="form-group">
+            <label for="timeInput">시간</label>
+            <input type="datetime-local" name="timeInput" class="form-control" id="timeInput" placeholder="(예시: 4/17 오후 1시)" required>
+          </div>
+          <div class="form-group">
+            <label for="locationInput">장소</label>
+            <input type="text" name="locationInput" class="form-control" id="locationInput" placeholder="(예시: 인하대 운동장)" required>
+          </div>
+          <div class="form-group">
+            <label for="locationInput">필요 인원</label>
+            <input type="number" name="peopleInput" class="form-control" id="peopleInput" min="0" required>
+          </div>
+          <div class="form-group">
+            <label for="detailsInput">세부 내용</label>
+            <textarea class="form-control" name="detailsInput" id="detailsInput" placeholder="(예시: 아태농구팀에서 가드 용병 1명을 모집합니다.)" required></textarea>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-primary">제출하기</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.getElementById('addMatchForm').addEventListener('submit', function(event) {
+    var matchInput = document.getElementById('matchInput').value;
+    var timeInput = document.getElementById('timeInput').value;
+    var locationInput = document.getElementById('locationInput').value;
+    var detailsInput = document.getElementById('detailsInput').value;
+
+    if (!matchInput || !timeInput || !locationInput || !detailsInput) {
+        event.preventDefault();
+        alert('모든 필드를 입력하세요.');
+    }
+});
+
+function getRandomImage() {
+  const images = ['basketball1.png', 'basketball2.png', 'basketball3.png', 'basketball4.png', 'basketball5.png'];
+  return images[Math.floor(Math.random() * images.length)];
+}
+
+// Replace image sources with random images
+document.querySelectorAll('.random-img').forEach(img => {
+  img.src = "{{ url_for('static', filename='') }}" + getRandomImage();
+});
+
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 신청하기 버튼 클릭 이벤트 처리
+    document.querySelectorAll('.apply-button').forEach(function(button) {
+        button.addEventListener('click', function(event) {
+            event.preventDefault(); // 기본 동작 중단
+
+            var matchNumber = this.getAttribute('data-id'); // 해당 버튼의 데이터 속성에서 매치 번호 가져오기
+            var confirmMessage = confirm("신청하시겠습니까?");
+
+            // 사용자의 선택에 따라 처리
+            if (confirmMessage) {
+                // 서버로 매치 번호와 함께 POST 요청 보내기
+                fetch('/basketball_apply', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ matchnum: matchNumber }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        alert(data.error); // 에러 메시지 출력
+                    } else {
+                        alert(data.message); // 성공 메시지 출력
+                        location.reload(); // 페이지 새로고침
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            } else {
+                // 아니오를 선택한 경우 처리할 내용 추가
+                alert("신청이 취소되었습니다.");
+            }
+        });
+    });
+});
+</script>
+
+
+
+
+{% endblock %}
